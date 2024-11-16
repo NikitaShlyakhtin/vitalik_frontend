@@ -2,7 +2,7 @@ import axios from "axios";
 import userStore from "../store/userStore";
 
 export async function fetchWallets(userId: string): Promise<Wallet[]> {
-    const url = "http://localhost:8080/auth/wallets";
+    const url = "https://container-app-d87wt-pocket.containers.cloud.ru/auth/wallets";
     const token = userStore.getToken();
 
     try {
@@ -33,7 +33,7 @@ export async function fetchWallets(userId: string): Promise<Wallet[]> {
 }
 
 export async function createWallet(userID: string, currency: string): Promise<Wallet> {
-    const url = "http://localhost:8080/auth/wallets/create";
+    const url = "https://container-app-d87wt-pocket.containers.cloud.ru/auth/wallets/create";
     const token = userStore.getToken();
 
     try {
@@ -62,7 +62,7 @@ export async function createWallet(userID: string, currency: string): Promise<Wa
 }
 
 export async function deposit(address: string, currency: string, amount: number): Promise<void> {
-    const url = "http://localhost:8080/auth/wallets/deposit";
+    const url = "https://container-app-d87wt-pocket.containers.cloud.ru/auth/wallets/deposit";
     const token = userStore.getToken();
 
     try {

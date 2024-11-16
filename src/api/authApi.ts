@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "http://localhost:8080";
+const baseURL = "https://container-app-d87wt-pocket.containers.cloud.ru";
 
 export async function register(userId: string, password: string): Promise<void> {
     const url = `${baseURL}/register`;

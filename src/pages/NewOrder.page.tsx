@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Container, Stack, Select, NumberInput, Button, Title, Text } from '@mantine/core';
+import React, {useState} from 'react';
+import {Container, Stack, Select, NumberInput, Button, Title, Text} from '@mantine/core';
 import Navbar from "@/components/Navbar";
 import WalletSelect from "@/components/WalletSelect";
 import userStore from "@/store/userStore";
 import {createOrder} from "@/api/ordersApi";
+import {meta} from "eslint-plugin-react/lib/rules/jsx-props-no-spread-multi";
+import description = meta.docs.description;
 
 type OrderType = 'BUY' | 'SELL';
 
@@ -74,9 +76,21 @@ const NewOrderPage: React.FC = () => {
         }
     };
 
+    const description = !buyWalletCurrency || !sellWalletCurrency
+        ? ""
+        : orderType === 'BUY'
+            ? `Buying price for 1 ${buyWalletCurrency} to ${sellWalletCurrency}`
+            : `Selling price for 1 ${sellWalletCurrency} to ${buyWalletCurrency}`;
+
+    const suffix = !buyWalletCurrency || !sellWalletCurrency
+        ? ""
+        : orderType === 'BUY'
+            ? sellWalletCurrency
+            : buyWalletCurrency;
+
     return (
         <Container size="xs" mt="xl">
-            <Navbar />
+            <Navbar/>
             <Stack mt="md">
                 <Title order={1} ta="center">New Order</Title>
 
@@ -85,8 +99,8 @@ const NewOrderPage: React.FC = () => {
                     value={orderType}
                     onChange={(value) => setOrderType(value as OrderType)}
                     data={[
-                        { value: 'BUY', label: 'Buy' },
-                        { value: 'SELL', label: 'Sell' },
+                        {value: 'BUY', label: 'Buy'},
+                        {value: 'SELL', label: 'Sell'},
                     ]}
                 />
 
@@ -107,6 +121,8 @@ const NewOrderPage: React.FC = () => {
                             onChange={setSellQuantity}
                             placeholder="e.g., 1.5"
                             min={0}
+                            suffix={` ${sellWalletCurrency}`}
+                            thousandSeparator
                         />
 
                         <WalletSelect
@@ -135,6 +151,8 @@ const NewOrderPage: React.FC = () => {
                             onChange={setBuyQuantity}
                             placeholder="e.g., 1.5"
                             min={0}
+                            suffix={` ${buyWalletCurrency}`}
+                            thousandSeparator
                         />
 
                         <WalletSelect
@@ -150,10 +168,13 @@ const NewOrderPage: React.FC = () => {
 
                 <NumberInput
                     label="Price"
+                    description={description}
                     placeholder="e.g., 100"
                     value={price}
                     onChange={(value) => setPrice(Number(value))}
                     min={0}
+                    suffix={` ${suffix}`}
+                    thousandSeparator
                 />
 
                 <Button onClick={handleSubmit} loading={loading} fullWidth>

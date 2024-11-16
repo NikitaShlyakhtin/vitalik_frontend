@@ -2,7 +2,7 @@ import axios from "axios";
 import userStore from "../store/userStore";
 
 export async function fetchAvailableCurrencies(): Promise<string[]> {
-    const url = "http://localhost:8080/auth/currencies";
+    const url = "https://container-app-d87wt-pocket.containers.cloud.ru/auth/currencies";
     const token = userStore.getToken();
 
     try {

@@ -2,7 +2,7 @@ import axios from "axios";
 import userStore from "../store/userStore";
 
 export async function fetchTransactions(userIdIn?: string[], addressIn?: string[]): Promise<Transaction[]> {
-    const url = "http://localhost:8080/auth/transactions";
+    const url = "https://container-app-d87wt-pocket.containers.cloud.ru/auth/transactions";
     const token = userStore.getToken();
 
     try {

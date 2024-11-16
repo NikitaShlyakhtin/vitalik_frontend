@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Select, Button, Text, Container, Stack, Card, Title, Grid } from '@mantine/core';
+import React, {useState, useEffect} from 'react';
+import {Select, Button, Text, Container, Stack, Card, Title, Grid, Group, Box, NumberFormatter} from '@mantine/core';
 import Navbar from "@/components/Navbar";
 import userStore from "@/store/userStore";
 import {createWallet, fetchWallets} from "@/api/walletsApi";
-import { formatDateStr } from "@/utils/date";
+import {formatDateStr, formatShortDateStr} from "@/utils/date";
 import {fetchAvailableCurrencies} from "@/api/currencyApi";
+import {getCurrencyIconFromString} from "@/utils/currency";
 
 const WalletPage: React.FC = () => {
     const [currency, setCurrency] = useState('');
@@ -79,10 +80,10 @@ const WalletPage: React.FC = () => {
 
     return (
         <Container size="xs" mt="xl">
-            <Navbar />
+            <Navbar/>
             <Stack mt="md">
                 <Title order={1} ta="center">
-                    Wallet
+                    Your Wallets
                 </Title>
                 <Select
                     label="Currency"
@@ -98,18 +99,39 @@ const WalletPage: React.FC = () => {
                 {error && <Text c="red" ta="center">{error}</Text>}
 
                 {!error && (
-                    <Grid mt="xl">
-                        {wallets.map((wallet) => (
-                            <Grid.Col span={12} key={wallet.requisites.address}>
-                                <Card shadow="sm" p="lg" withBorder>
-                                    <Text size="md"><strong>Currency:</strong> {wallet.currency}</Text>
-                                    <Text size="md"><strong>Balance:</strong> {wallet.balance}</Text>
-                                    <Text size="md"><strong>Created at:</strong> {formatDateStr(wallet.created_at)}</Text>
-                                    <Text size="md"><strong>Updated at:</strong> {formatDateStr(wallet.updated_at)}</Text>
-                                </Card>
-                            </Grid.Col>
-                        ))}
-                    </Grid>
+                    <Stack gap="xl" mt="xl">
+                        {wallets.map((wallet) => {
+                            const currencyIcon = getCurrencyIconFromString(wallet.currency)
+
+                            return <Group key={wallet.requisites.address} justify="space-between">
+                                <Group align="center">
+                                    {currencyIcon}
+                                    <Stack gap={0}>
+                                        <Title order={4}>{wallet.currency}</Title>
+                                        <Text size="sm" c="dimmed">
+                                            Updated: {formatShortDateStr(wallet.updated_at || "")}
+                                        </Text>
+                                    </Stack>
+                                </Group>
+                                <Stack gap={0}>
+                                    <Title order={5}>
+                                        <NumberFormatter
+                                            value={wallet.balance}
+                                            suffix={` ${wallet.currency}`}
+                                            thousandSeparator
+                                        />
+                                    </Title>
+                                    <Text size="sm" c="dimmed">
+                                        <NumberFormatter
+                                            value={wallet.balance}
+                                            prefix="$"
+                                            thousandSeparator
+                                        />
+                                    </Text>
+                                </Stack>
+                            </Group>
+                        })}
+                    </Stack>
                 )}
             </Stack>
         </Container>

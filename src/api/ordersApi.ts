@@ -2,7 +2,7 @@ import axios from "axios";
 import userStore from "../store/userStore";
 
 export async function createOrder(orderPayload: any): Promise<void> {
-    const url = "http://localhost:8080/auth/orders/create";
+    const url = "https://container-app-d87wt-pocket.containers.cloud.ru/auth/orders/create";
     const token = userStore.getToken();
 
     try {
@@ -26,7 +26,7 @@ export async function createOrder(orderPayload: any): Promise<void> {
 }
 
 export async function fetchOrders(): Promise<Order[]> {
-    const url = "http://localhost:8080/auth/orders";
+    const url = "https://container-app-d87wt-pocket.containers.cloud.ru/auth/orders";
     const token = userStore.getToken();
 
     try {

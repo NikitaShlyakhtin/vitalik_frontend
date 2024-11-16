@@ -11,3 +11,13 @@ export function formatDateStr(dateStr: string): string {
         hour12: false,
     });
 }
+
+export function formatShortDateStr(dateStr: string): string {
+    const date = new Date(dateStr);
+
+    return  date.toLocaleString('en-US', {
+        day: 'numeric',  // "11"
+        month: 'long',   // "November"
+        weekday: "short"
+    });
+}

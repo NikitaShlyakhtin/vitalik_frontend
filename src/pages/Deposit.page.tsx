@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Button, Text, Container, Stack, Title, NumberInput } from '@mantine/core';
-import { observer } from 'mobx-react-lite';
+import React, {useState} from 'react';
+import {Button, Text, Container, Stack, Title, NumberInput, rem} from '@mantine/core';
+import {observer} from 'mobx-react-lite';
 import Navbar from '@/components/Navbar';
 import WalletSelect from '@/components/WalletSelect';
 import userStore from "@/store/userStore";
@@ -8,6 +8,8 @@ import {deposit} from "@/api/walletsApi";
 
 const DepositPage: React.FC = observer(() => {
     const [selectedWalletAddress, setSelectedWalletAddress] = useState<string | null>(null);
+    const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
+
     const [amount, setAmount] = useState<string | number>("");
 
     const [error, setError] = useState<string | null>(null);
@@ -16,8 +18,25 @@ const DepositPage: React.FC = observer(() => {
 
     const wallets = userStore.wallets || [];
 
+    const handleWalletSelection = async (value: string | null) => {
+        try {
+            const wallet = wallets.find(w => w.requisites.address === value);
+            if (!wallet) {
+                setError('Wallet not found.');
+                setLoading(false);
+                return;
+            }
+            setSelectedWalletAddress(value);
+            setSelectedWallet(wallet);
+        } catch (error) {
+            setError('Failed to make deposit. Please check your input and try again.');
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const handleDeposit = async () => {
-        if (!selectedWalletAddress || !amount) {
+        if (!selectedWallet || !amount) {
             setError('All fields are required.');
             return;
         }
@@ -27,13 +46,6 @@ const DepositPage: React.FC = observer(() => {
         setSuccessMessage(null);
 
         try {
-            const wallet = wallets.find(w => w.requisites.address === selectedWalletAddress);
-            if (!wallet) {
-                setError('Wallet not found.');
-                setLoading(false);
-                return;
-            }
-
             const parsedAmount = parseFloat(amount.toString());
             if (isNaN(parsedAmount) || parsedAmount <= 0) {
                 setError('Invalid amount. Must be a positive number.');
@@ -41,11 +53,12 @@ const DepositPage: React.FC = observer(() => {
                 return;
             }
 
-            await deposit(selectedWalletAddress, wallet.currency, parsedAmount);
+            await deposit(selectedWallet.requisites.address, selectedWallet.currency, parsedAmount);
 
             setSuccessMessage('Deposit successful!');
             setAmount("");
-            setSelectedWalletAddress(null);
+            setSelectedWalletAddress(null)
+            setSelectedWallet(null)
         } catch (error) {
             setError('Failed to make deposit. Please check your input and try again.');
         } finally {
@@ -55,7 +68,7 @@ const DepositPage: React.FC = observer(() => {
 
     return (
         <Container size="xs" mt="xl">
-            <Navbar />
+            <Navbar/>
             <Stack mt="md">
                 <Title order={1} ta="center">
                     Deposit
@@ -65,7 +78,7 @@ const DepositPage: React.FC = observer(() => {
                     label="Wallet"
                     placeholder="Select wallet"
                     selectedWallet={selectedWalletAddress}
-                    onChange={setSelectedWalletAddress}
+                    onChange={handleWalletSelection}
                 />
 
                 <NumberInput
@@ -74,6 +87,8 @@ const DepositPage: React.FC = observer(() => {
                     value={amount}
                     onChange={setAmount}
                     min={0}
+                    suffix={` ${selectedWallet?.currency}`}
+                    thousandSeparator
                 />
 
                 <Button fullWidth onClick={handleDeposit} loading={loading}>
